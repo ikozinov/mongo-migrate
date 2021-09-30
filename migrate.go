@@ -3,9 +3,9 @@ package migrate
 
 import (
 	"context"
+	"fmt"
 	"time"
 
-	"github.com/pkg/errors"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -100,7 +100,7 @@ func (m *Migrate) getCollections() (collections []collectionSpecification, err e
 			curErr := cursor.Close(context.TODO())
 			if curErr != nil {
 				if err != nil {
-					err = errors.Wrapf(curErr, "migrate: get collection failed: %s", err.Error())
+					err = fmt.Errorf("migrate: get collection failed: %s: %w", err.Error(), curErr)
 				} else {
 					err = curErr
 				}
