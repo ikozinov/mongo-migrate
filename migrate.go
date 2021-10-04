@@ -190,10 +190,10 @@ func (m *Migrate) Up(n int) error {
 		}
 		p++
 		if err := migration.Up(m.db); err != nil {
-			return err
+			return fmt.Errorf("%d: %s: %w", migration.Version, migration.Description, err)
 		}
 		if err := m.SetVersion(migration.Version, migration.Description); err != nil {
-			return err
+			return fmt.Errorf("internal set version %d: %w", migration.Version, err)
 		}
 	}
 	return nil
@@ -219,7 +219,7 @@ func (m *Migrate) Down(n int) error {
 		}
 		p++
 		if err := migration.Down(m.db); err != nil {
-			return err
+			return fmt.Errorf("%d: %s: %w", migration.Version, migration.Description, err)
 		}
 
 		var prevMigration Migration
@@ -229,7 +229,7 @@ func (m *Migrate) Down(n int) error {
 			prevMigration = m.migrations[i-1]
 		}
 		if err := m.SetVersion(prevMigration.Version, prevMigration.Description); err != nil {
-			return err
+			return fmt.Errorf("internal set version %d: %w", migration.Version, err)
 		}
 	}
 	return nil
